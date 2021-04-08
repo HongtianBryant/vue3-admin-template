@@ -20,7 +20,7 @@
 
       <div class="drawer-item">
         <span>Sidebar Logo</span>
-        <el-switch v-model="sidebarLogo" class="drawer-switch" />
+        <!-- <el-switch v-model="sidebarLogo" class="drawer-switch" /> -->
       </div>
 
     </div>
@@ -76,7 +76,7 @@ export default {
     })
 
     const themeChange = (val) => {
-      this.$store.dispatch('settings/changeSetting', {
+      store.dispatch('settings/changeSetting', {
         key: 'theme',
         value: val
       })

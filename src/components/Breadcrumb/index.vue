@@ -10,18 +10,17 @@
 </template>
 
 <script>
-import pathToRegexp from 'path-to-regexp'
-import { onMounted, reactive, toRefs, watch } from 'vue'
+import { pathToRegexp } from 'path-to-regexp'
+import { defineComponent, ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
-export default {
+export default defineComponent({
+  name: 'Breadcrumb',
   setup() {
     const router = useRouter()
     const route = useRoute()
 
-    const state = reactive({
-      levelList: null
-    })
+    let levelList = ref(null)
 
     watch(
       '$route', (route) => {
@@ -41,11 +40,11 @@ export default {
       let matched = route.matched.filter(item => item.meta && item.meta.title)
       const first = matched[0]
 
-      if (!this.isDashboard(first)) {
+      if (!isDashboard(first)) {
         matched = [{ path: '/dashboard', meta: { title: 'Dashboard' }}].concat(matched)
       }
 
-      this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
+      levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
     }
     const isDashboard = (route) => {
       const name = route && route.name
@@ -61,23 +60,25 @@ export default {
       var toPath = pathToRegexp.compile(path)
       return toPath(params)
     }
+
+    // methods
     const handleLink = (item) => {
       const { redirect, path } = item
       if (redirect) {
         router.push(redirect)
         return
       }
-      router.push(this.pathCompile(path))
+      router.push(pathCompile(path))
     }
     return {
-      ...toRefs(state),
+      levelList,
       getBreadcrumb,
       isDashboard,
       pathCompile,
       handleLink
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

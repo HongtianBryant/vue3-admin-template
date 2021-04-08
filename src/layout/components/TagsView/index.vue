@@ -28,51 +28,53 @@
 <script>
 import ScrollPane from './ScrollPane'
 import path from 'path'
+import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
   components: { ScrollPane },
-  data() {
-    return {
-      visible: false,
+  setup() {
+    const store = useStore()
+    const visible = ref(false)
+    const state = reactive({
       top: 0,
       left: 0,
       selectedTag: {},
       affixTags: []
-    }
-  },
-  computed: {
-    visitedViews() {
-      return this.$store.state.tagsView.visitedViews
-    },
-    routes() {
-      return this.$store.state.permission.routes
-    }
-  },
-  watch: {
-    $route() {
-      this.addTags()
-      this.moveToCurrentTag()
-    },
-    visible(value) {
-      if (value) {
-        document.body.addEventListener('click', this.closeMenu)
-      } else {
-        document.body.removeEventListener('click', this.closeMenu)
+    })
+
+    const visitedViews = computed(() => {
+      return store.state.tagsView.visitedViews
+    })
+
+    const routes = computed(() => {
+      return store.state.permission.routes
+    })
+
+    watch(
+      '$route', () => {
+        addTags()
+        moveToCurrentTag()
       }
-    }
-  },
-  mounted() {
-    this.initTags()
-    this.addTags()
-  },
-  methods: {
-    isActive(route) {
+    )
+
+    watch(
+      visible, (value) => {
+        if (value) {
+          document.body.addEventListener('click', this.closeMenu)
+        } else {
+          document.body.removeEventListener('click', this.closeMenu)
+        }
+      }
+    )
+
+    const isActive = (route) => {
       return route.path === this.$route.path
-    },
-    isAffix(tag) {
+    }
+    const isAffix = (tag) => {
       return tag.meta && tag.meta.affix
-    },
-    filterAffixTags(routes, basePath = '/') {
+    }
+    const filterAffixTags = (routes, basePath = '/') => {
       let tags = []
       routes.forEach(route => {
         if (route.meta && route.meta.affix) {
@@ -92,8 +94,8 @@ export default {
         }
       })
       return tags
-    },
-    initTags() {
+    }
+    const initTags = () => {
       const affixTags = this.affixTags = this.filterAffixTags(this.routes)
       for (const tag of affixTags) {
         // Must have tag name
@@ -101,15 +103,15 @@ export default {
           this.$store.dispatch('tagsView/addVisitedView', tag)
         }
       }
-    },
-    addTags() {
+    }
+    const addTags = () => {
       const { name } = this.$route
       if (name) {
         this.$store.dispatch('tagsView/addView', this.$route)
       }
       return false
-    },
-    moveToCurrentTag() {
+    }
+    const moveToCurrentTag = () => {
       const tags = this.$refs.tag
       this.$nextTick(() => {
         for (const tag of tags) {
@@ -123,8 +125,8 @@ export default {
           }
         }
       })
-    },
-    refreshSelectedTag(view) {
+    }
+    const refreshSelectedTag = (view) => {
       this.$store.dispatch('tagsView/delCachedView', view).then(() => {
         const { fullPath } = view
         this.$nextTick(() => {
@@ -133,29 +135,29 @@ export default {
           })
         })
       })
-    },
-    closeSelectedTag(view) {
+    }
+    const closeSelectedTag = (view) => {
       this.$store.dispatch('tagsView/delView', view).then(({ visitedViews }) => {
         if (this.isActive(view)) {
           this.toLastView(visitedViews, view)
         }
       })
-    },
-    closeOthersTags() {
+    }
+    const closeOthersTags = () => {
       this.$router.push(this.selectedTag)
       this.$store.dispatch('tagsView/delOthersViews', this.selectedTag).then(() => {
         this.moveToCurrentTag()
       })
-    },
-    closeAllTags(view) {
+    }
+    const closeAllTags = (view) => {
       this.$store.dispatch('tagsView/delAllViews').then(({ visitedViews }) => {
         if (this.affixTags.some(tag => tag.path === view.path)) {
           return
         }
         this.toLastView(visitedViews, view)
       })
-    },
-    toLastView(visitedViews, view) {
+    }
+    const toLastView = (visitedViews, view) => {
       const latestView = visitedViews.slice(-1)[0]
       if (latestView) {
         this.$router.push(latestView.fullPath)
@@ -169,8 +171,9 @@ export default {
           this.$router.push('/')
         }
       }
-    },
-    openMenu(tag, e) {
+    }
+
+    const openMenu = (tag, e) => {
       const menuMinWidth = 105
       const offsetLeft = this.$el.getBoundingClientRect().left // container margin left
       const offsetWidth = this.$el.offsetWidth // container width
@@ -186,13 +189,47 @@ export default {
       this.top = e.clientY
       this.visible = true
       this.selectedTag = tag
-    },
-    closeMenu() {
+    }
+    const closeMenu = () => {
       this.visible = false
-    },
-    handleScroll() {
+    }
+
+    const handleScroll = () => {
       this.closeMenu()
     }
+
+    onMounted(() => {
+      initTags()
+      addTags()
+    })
+
+    return {
+      visible,
+      state,
+      ...toRefs(state),
+      // computed
+      visitedViews,
+      routes,
+      // methods
+      isActive,
+      isAffix,
+      filterAffixTags,
+      initTags,
+      addTags,
+      moveToCurrentTag,
+      refreshSelectedTag,
+      closeSelectedTag,
+      closeOthersTags,
+      closeAllTags,
+      toLastView,
+      openMenu,
+      closeMenu,
+      handleScroll
+    }
+  },
+  mounted() {
+    this.initTags()
+    this.addTags()
   }
 }
 </script>

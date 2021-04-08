@@ -1,8 +1,8 @@
 /*
  * @Author: Edy
  * @Date: 2021-04-07 09:46:29
- * @LastEditTime: 2021-04-07 15:14:43
- * @LastEditors: Edy
+ * @LastEditTime: 2021-04-08 15:52:18
+ * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vue3-admin-template/src/router/index.js
  */
@@ -25,6 +25,8 @@ export const constantRoutes = [
     ]
   }
 ]
+
+export const asyncRoutes = []
 
 const router = createRouter({
   history: createWebHashHistory(),

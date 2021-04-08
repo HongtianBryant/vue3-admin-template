@@ -18,7 +18,6 @@
 <script>
 import RightPanel from '@/components/RightPanel'
 import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
-import { notify } from 'element-plus'
 import { computed, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 
@@ -35,28 +34,16 @@ export default {
     Sidebar,
     TagsView
   },
-  sockets: {
-    // 监听notify事件，方法是后台定义和提供的
-    notify(data) {
-      // 判断消息id是否与所要展示的任务一致
-      if (data && data.notifyId === 'testing') {
-        notify({
-          title: '提示',
-          message: data.message,
-          duration: 0
-        })
-      }
-    }
-  },
   setup() {
     const store = useStore()
+
     const $_isMobile = () => {
       const rect = body.getBoundingClientRect()
       return rect.width - 1 < WIDTH
     }
     const $_resizeHandler = () => {
       if (!document.hidden) {
-        const isMobile = this.$_isMobile()
+        const isMobile = $_isMobile()
         store.dispatch('app/toggleDevice', isMobile ? 'mobile' : 'desktop')
 
         if (isMobile) {
@@ -66,7 +53,7 @@ export default {
     }
 
     const handleClickOutside = () => {
-      this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+      store.dispatch('app/closeSideBar', { withoutAnimation: false })
     }
 
     watch(
@@ -80,24 +67,26 @@ export default {
     onMounted(() => {
       const isMobile = $_isMobile()
       if (isMobile) {
+        console.log(store)
         store.dispatch('app/toggleDevice', 'mobile')
         store.dispatch('app/closeSideBar', { withoutAnimation: true })
       }
     })
 
-    const classObj = computed(() => {
-      return {
-        hideSidebar: !this.sidebar.opened,
-        openSidebar: this.sidebar.opened,
-        withoutAnimation: this.sidebar.withoutAnimation,
-        mobile: this.device === 'mobile'
-      }
-    })
     const sidebar = computed(() => store.state.sidebar)
     const device = computed(() => store.state.device)
     const showSettings = computed(() => store.state.showSettings)
     const needTagsView = computed(() => store.state.needTagsView)
     const fixedHeader = computed(() => store.state.fixedHeader)
+
+    const classObj = computed(() => {
+      return {
+        hideSidebar: !sidebar.opened,
+        openSidebar: sidebar.opened,
+        withoutAnimation: sidebar.withoutAnimation,
+        mobile: device === 'mobile'
+      }
+    })
 
     return {
       // state

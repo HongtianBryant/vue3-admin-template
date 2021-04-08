@@ -6,39 +6,33 @@
 
 <script>
 const tagAndTagSpacing = 4 // tagAndTagSpacing
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 export default {
   name: 'ScrollPane',
-  data() {
-    return {
-      left: 0
-    }
-  },
-  computed: {
-    scrollWrapper() {
-      return this.$refs.scrollContainer.$refs.wrap
-    }
-  },
-  mounted() {
-    this.scrollWrapper.addEventListener('scroll', this.emitScroll, true)
-  },
-  beforeDestroy() {
-    this.scrollWrapper.removeEventListener('scroll', this.emitScroll)
-  },
-  methods: {
-    handleScroll(e) {
+  setup(props, context) {
+    const left = ref(0)
+    const scrollContainer = ref(null)
+
+    const scrollWrapper = computed(() => {
+      return scrollContainer.wrap
+    })
+
+    const handleScroll = (e) => {
       const eventDelta = e.wheelDelta || -e.deltaY * 40
-      const $scrollWrapper = this.scrollWrapper
+      const $scrollWrapper = scrollWrapper
       $scrollWrapper.scrollLeft = $scrollWrapper.scrollLeft + eventDelta / 4
-    },
-    emitScroll() {
-      this.$emit('scroll')
-    },
-    moveToTarget(currentTag) {
-      const $container = this.$refs.scrollContainer.$el
+    }
+
+    const emitScroll = () => {
+      context.emit('scroll')
+    }
+
+    const moveToTarget = (currentTag) => {
+      const $container = scrollContainer.$el
       const $containerWidth = $container.offsetWidth
-      const $scrollWrapper = this.scrollWrapper
-      const tagList = this.$parent.$refs.tag
+      const $scrollWrapper = scrollWrapper
+      const tagList = this.$parent.tag
 
       let firstTag = null
       let lastTag = null
@@ -71,6 +65,23 @@ export default {
           $scrollWrapper.scrollLeft = beforePrevTagOffsetLeft
         }
       }
+    }
+
+    onMounted(() => {
+      scrollWrapper.addEventListener('scroll', emitScroll, true)
+    })
+
+    onUnmounted(() => {
+      scrollWrapper.removeEventListener('scroll', emitScroll)
+    })
+
+    return {
+      left,
+      scrollContainer,
+      scrollWrapper,
+      handleScroll,
+      emitScroll,
+      moveToTarget
     }
   }
 }

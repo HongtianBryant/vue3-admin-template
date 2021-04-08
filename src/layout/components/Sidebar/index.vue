@@ -5,10 +5,10 @@
       <el-menu
         :default-active="activeMenu"
         :collapse="isCollapse"
-        :background-color="variables.menuBg"
-        :text-color="variables.menuText"
+        :background-color="variables1.menuBg"
+        :text-color="variables1.menuText"
         :unique-opened="false"
-        :active-text-color="variables.menuActiveText"
+        :active-text-color="variables1.menuActiveText"
         :collapse-transition="false"
         mode="vertical"
       >
@@ -29,8 +29,8 @@ import { useStore } from 'vuex'
 export default {
   components: { SidebarItem, Logo },
   setup() {
+    const store = useStore()
     const route = useRoute()
-    const store = useStore
 
     const permission_routes = computed(() => store.state.permission_routes)
     const sidebar = computed(() => store.state.sidebar)
@@ -46,7 +46,7 @@ export default {
 
     const showLogo = computed(() => store.state.settings.sidebarLogo)
     const isCollapse = computed(() => !sidebar.opened)
-    const variables = computed(() => variables)
+    const variables1 = computed(() => variables)
 
     return {
       permission_routes,
@@ -54,7 +54,7 @@ export default {
       isCollapse,
       activeMenu,
       showLogo,
-      variables
+      variables1
     }
   }
 }

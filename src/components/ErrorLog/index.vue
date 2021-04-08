@@ -47,25 +47,31 @@
 </template>
 
 <script>
-export default {
+import { defineComponent, ref, computed } from 'vue'
+import { useStore } from 'vuex'
+
+export default defineComponent({
   name: 'ErrorLog',
-  data() {
+  setup() {
+    const store = useStore()
+    let dialogTableVisible = ref(false)
+    const errorLogs = computed(() => {
+      return store.getters.errorLogs
+    })
+
+    const clearAll = () => {
+      dialogTableVisible = false
+      store.dispatch('errorLog/clearErrorLog')
+    }
+
     return {
-      dialogTableVisible: false
-    }
-  },
-  computed: {
-    errorLogs() {
-      return this.$store.getters.errorLogs
-    }
-  },
-  methods: {
-    clearAll() {
-      this.dialogTableVisible = false
-      this.$store.dispatch('errorLog/clearErrorLog')
+      dialogTableVisible,
+      errorLogs,
+      clearAll
+
     }
   }
-}
+})
 </script>
 
 <style scoped>
