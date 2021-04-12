@@ -5,6 +5,13 @@ import store from './store'
 import './permission'
 import './utils/error-log' // error log
 
+console.log(process.env.NODE_ENV)
+
+if (process.env.NODE_ENV === 'development') {
+  const { mockXHR } = require('../mock')
+  mockXHR()
+}
+
 import {
   ElAlert,
   ElAside,

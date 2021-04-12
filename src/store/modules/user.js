@@ -1,30 +1,46 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
+import { ElMessage } from 'element-plus'
 
-const state = {
-  token: getToken(),
-  name: '',
-  avatar: '',
-  introduction: '',
-  roles: []
+const getDefaultState = () => {
+  return {
+    token: getToken(),
+    name: '',
+    nickName: '',
+    avatar: '',
+    userId: '',
+    mobile: '',
+    schoolName: ''
+  }
 }
 
+const state = getDefaultState()
+
 const mutations = {
+  RESET_STATE: (state) => {
+    Object.assign(state, getDefaultState())
+  },
   SET_TOKEN: (state, token) => {
     state.token = token
-  },
-  SET_INTRODUCTION: (state, introduction) => {
-    state.introduction = introduction
   },
   SET_NAME: (state, name) => {
     state.name = name
   },
+  SET_NICK_NAME: (state, nickName) => {
+    state.nickName = nickName
+  },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
   },
-  SET_ROLES: (state, roles) => {
-    state.roles = roles
+  SET_USER_ID: (state, userId) => {
+    state.userId = userId
+  },
+  SET_MOBILE: (state, mobile) => {
+    state.mobile = mobile
+  },
+  SET_SCHOOL_NAME: (state, schoolName) => {
+    state.schoolName = schoolName
   }
 }
 
@@ -51,20 +67,17 @@ const actions = {
         const { data } = response
 
         if (!data) {
-          reject('Verification failed, please Login again.')
+          return reject('验证失败，请重新登录')
         }
 
-        const { roles, name, avatar, introduction } = data
+        const { username, nickname, avatar, userId, mobile, schoName } = data
 
-        // roles must be a non-empty array
-        if (!roles || roles.length <= 0) {
-          reject('getInfo: roles must be a non-null array!')
-        }
-
-        commit('SET_ROLES', roles)
-        commit('SET_NAME', name)
+        commit('SET_NAME', username)
+        commit('SET_NICK_NAME', nickname)
         commit('SET_AVATAR', avatar)
-        commit('SET_INTRODUCTION', introduction)
+        commit('SET_USER_ID', userId)
+        commit('SET_MOBILE', mobile)
+        commit('SET_SCHOOL_NAME', schoName)
         resolve(data)
       }).catch(error => {
         reject(error)

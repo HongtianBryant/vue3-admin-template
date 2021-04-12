@@ -12,7 +12,7 @@
         :collapse-transition="false"
         mode="vertical"
       >
-        <sidebar-item v-for="route in permission_routes" :key="route.path" :item="route" :base-path="route.path" />
+        <sidebar-item v-for="route in routes" :key="route.path" :item="route" :base-path="route.path" />
       </el-menu>
     </el-scrollbar>
   </div>
@@ -23,17 +23,20 @@ import Logo from './Logo'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
 export default {
   components: { SidebarItem, Logo },
   setup() {
     const store = useStore()
+    const router = useRouter()
     const route = useRoute()
+    console.log(router)
 
-    const permission_routes = computed(() => store.state.permission_routes)
+    const routes = router.options.routes
     const sidebar = computed(() => store.state.sidebar)
+    console.log(routes)
 
     const activeMenu = computed(() => {
       const { meta, path } = route
@@ -49,7 +52,7 @@ export default {
     const variables1 = computed(() => variables)
 
     return {
-      permission_routes,
+      routes,
       sidebar,
       isCollapse,
       activeMenu,
