@@ -6,7 +6,7 @@
 
 <script>
 import { isExternal } from '@/utils/validate'
-import { reactive, computed } from 'vue'
+import { computed } from '@vue/runtime-core'
 
 export default {
   props: {
@@ -16,21 +16,19 @@ export default {
     }
   },
   setup(props) {
-    const linkTo = reactive(props.to)
-
-    const isExternalUrl = computed(() => {
-      return isExternal(linkTo)
+    const isExternalLink = computed(() => {
+      return isExternal(props.to)
     })
 
     const type = computed(() => {
-      if (isExternalUrl) {
+      if (isExternalLink.value) {
         return 'a'
       }
       return 'router-link'
     })
 
     const linkProps = (to) => {
-      if (isExternalUrl) {
+      if (isExternalLink.value) {
         return {
           href: to,
           target: '_blank',
@@ -43,8 +41,7 @@ export default {
     }
 
     return {
-      linkTo,
-      isExternalUrl,
+      isExternalLink,
       type,
       linkProps
     }

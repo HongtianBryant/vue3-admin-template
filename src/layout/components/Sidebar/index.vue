@@ -21,22 +21,25 @@
 <script>
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
-import variables from '@/styles/variables.scss'
+import variables from '@/styles/variables-export.scss'
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
+import router from '@/router'
 
 export default {
-  components: { SidebarItem, Logo },
+  components: {
+    SidebarItem,
+    Logo
+  },
   setup() {
     const store = useStore()
-    const router = useRouter()
     const route = useRoute()
-    console.log(router)
 
     const routes = router.options.routes
-    const sidebar = computed(() => store.state.sidebar)
-    console.log(routes)
+    const sidebar = computed(() => {
+      return store.state.sidebar
+    })
 
     const activeMenu = computed(() => {
       const { meta, path } = route

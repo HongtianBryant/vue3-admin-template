@@ -25,6 +25,15 @@ module.exports = {
     },
     before: require('./mock/mock-server.js')
   },
+  css: {
+    loaderOptions: {
+      sass: {
+        additionalData: `
+        @import "@/styles/mixin.scss";
+        @import "@/styles/variables.scss";`
+      }
+    }
+  },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.

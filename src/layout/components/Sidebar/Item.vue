@@ -1,4 +1,6 @@
 <script>
+import { h } from 'vue'
+
 export default {
   name: 'MenuItem',
   functional: true,
@@ -12,22 +14,23 @@ export default {
       default: ''
     }
   },
-  render(h, context) {
-    const { icon, title } = context.props
-    const vnodes = []
+  setup(props) {
+    return () => {
+      const vnodes = []
 
-    if (icon) {
-      if (icon.includes('el-icon')) {
-        vnodes.push(<i class={[icon, 'sub-el-icon']} />)
-      } else {
-        vnodes.push(<svg-icon icon-class={icon}/>)
+      if (props.icon) {
+        if (props.icon.includes('el-icon')) {
+          vnodes.push(<i class={[props.icon, 'sub-el-icon']} />)
+        } else {
+          vnodes.push(<svg-icon icon-class={props.icon}/>)
+        }
       }
-    }
 
-    if (title) {
-      vnodes.push(<span slot='title'>{(title)}</span>)
+      if (props.title) {
+        vnodes.push(<span slot='title'>{(props.title)}</span>)
+      }
+      return vnodes
     }
-    return vnodes
   }
 }
 </script>

@@ -2,10 +2,11 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import './styles/index.scss'
+
+import './icons'
 import './permission'
 import './utils/error-log' // error log
-
-console.log(process.env.NODE_ENV)
 
 if (process.env.NODE_ENV === 'development') {
   const { mockXHR } = require('../mock')
@@ -197,8 +198,6 @@ plugins.forEach(plugin => {
   app.use(plugin)
 })
 
-app.use(ElButton)
-app.use(ElSelect)
 app.use(router)
 app.use(store)
 app.mount('#app')

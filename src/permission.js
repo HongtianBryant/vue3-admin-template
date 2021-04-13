@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-07 10:57:38
- * @LastEditTime: 2021-04-08 18:55:41
+ * @LastEditTime: 2021-04-13 10:28:45
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vue3-admin-template/src/permission.js
@@ -17,14 +17,12 @@ router.beforeEach(async(to, from, next) => {
   document.title = getPageTitle(to.meta.title)
 
   const hasToken = getToken()
-  console.log(hasToken)
 
   if (hasToken) {
     if (to.path === '/login') {
       next({ path: '/' })
     } else {
       const hasGetUserInfo = store.getters.name
-      // 设置底部tabbar激活状态
 
       if (hasGetUserInfo) {
         next()
@@ -33,6 +31,7 @@ router.beforeEach(async(to, from, next) => {
           // get user info
           // await store.dispatch('user/getInfo')
 
+          console.log('router to:', to)
           next()
         } catch (error) {
           // remove token and go to login page to re-login
